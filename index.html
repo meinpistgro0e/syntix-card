@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Syntix Card</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Syntix Card">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#f4f4f7">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="icon" href="assets/logo.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="look-bank">
+  <header class="top">
+    <div class="brand"><img src="assets/logo.svg" alt=""><span>Syntix <b>Card</b></span></div>
+    <button class="pill-btn" id="cards-btn" aria-label="Meine Karten">
+      <svg viewBox="0 0 24 24"><rect x="3" y="7" width="15" height="11" rx="2.5"/><path d="M7 4h11.5A2.5 2.5 0 0 1 21 6.5V14"/></svg>
+      <span>Meine Karten</span>
+    </button>
+  </header>
+
+  <nav class="steps" id="steps">
+    <button data-step="1" class="on"><i>1</i>Bild</button>
+    <button data-step="2"><i>2</i>Gestalten</button>
+    <button data-step="3"><i>3</i>Fertig</button>
+  </nav>
+
+  <main>
+    <section class="stage" id="stage">
+      <!-- Bankkarten-Look -->
+      <div class="bcard" id="bcard">
+        <canvas id="face" width="1200" height="756"></canvas>
+        <div class="w-empty" id="pv-empty2">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>
+          Tippe hier, um dein Bild einzufügen
+        </div>
+      </div>
+
+      <!-- Wallet-Ansicht, sieht aus wie in Wallet -->
+      <div class="wcard" id="wcard" hidden>
+        <div class="w-head"><canvas id="pv-logo" width="90" height="90"></canvas><span id="pv-title"></span></div>
+        <div class="w-strip">
+          <canvas id="strip" width="1125" height="369"></canvas>
+          <div class="w-primary" id="pv-primary"><small id="pv-biglabel"></small><strong id="pv-big"></strong></div>
+          <div class="w-empty" id="pv-empty">
+            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>
+            Tippe hier, um dein Bild einzufügen
+          </div>
+        </div>
+        <div class="w-fields">
+          <div><small id="pv-f1l"></small><span id="pv-f1v"></span></div>
+          <div class="r"><small id="pv-f2l"></small><span id="pv-f2v"></span></div>
+        </div>
+        <div class="w-code" id="pv-code"><div class="qrbox"><canvas id="pv-qr" width="420" height="420"></canvas><small id="pv-qrtext"></small></div></div>
+      </div>
+
+      <div class="tabs views only-bank" id="views">
+        <button data-view="card" class="on">Karte</button>
+        <button data-view="wallet">So in Wallet</button>
+      </div>
+      <p class="hint" id="drag-hint">Bild mit dem Finger verschieben, mit zwei Fingern zoomen.</p>
+    </section>
+
+    <!-- Schritt 1: Bild -->
+    <section class="panel" data-panel="1">
+      <div class="group">
+        <h3>Kartenart</h3>
+        <div class="tabs" id="look">
+          <button data-look="bank" class="on">Bankkarten-Look</button>
+          <button data-look="wallet">Kundenkarte</button>
+        </div>
+      </div>
+      <label class="btn primary block" for="file">
+        <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0l-5 5m5-5l5 5M4 20h16"/></svg>
+        <span id="file-label">Bild auswählen</span>
+      </label>
+      <input type="file" id="file" accept="image/*" hidden>
+      <div class="group">
+        <h3>Effekt</h3>
+        <div class="chips" id="effects"></div>
+        <h3>Filter</h3>
+        <div class="chips" id="filters"></div>
+      </div>
+      <div class="group">
+        <label class="range"><span>Zoom</span><input type="range" id="zoom" min="1" max="4" step="0.01"></label>
+        <label class="range"><span>Helligkeit</span><input type="range" id="bright" min="-50" max="50" step="1"></label>
+        <label class="range"><span>Abdunkeln für Text</span><input type="range" id="shade" min="0" max="80" step="1"></label>
+        <button class="btn ghost small" id="center">Bild wieder mittig</button>
+      </div>
+      <button class="btn dark block" data-go="2">Weiter zum Gestalten</button>
+    </section>
+
+    <!-- Schritt 2: Gestalten -->
+    <section class="panel" data-panel="2" hidden>
+      <div class="group only-bank">
+        <h3>Karte</h3>
+        <label class="field"><span>Name auf der Karte</span><input id="holder" maxlength="26" autocomplete="off"></label>
+        <label class="field"><span>Letzte 4 Ziffern (frei erfunden)</span><input id="last4" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off"></label>
+        <label class="switch"><input type="checkbox" id="showNum"><i></i><span>Kartennummer zeigen</span></label>
+        <label class="switch"><input type="checkbox" id="chip"><i></i><span>Chip</span></label>
+        <label class="switch"><input type="checkbox" id="nfc"><i></i><span>Kontaktlos-Zeichen</span></label>
+      </div>
+
+      <div class="group">
+        <h3>Text</h3>
+        <label class="field"><span>Kartenname (oben links)</span><input id="title" maxlength="24" autocomplete="off"></label>
+        <div class="only-wallet">
+          <label class="field"><span>Kleine Zeile über dem großen Text</span><input id="bigLabel" maxlength="24" autocomplete="off"></label>
+        </div>
+        <div class="only-wallet">
+          <label class="field"><span>Großer Text auf dem Bild</span><input id="big" maxlength="20" autocomplete="off"></label>
+        </div>
+        <p class="note only-bank">Die zwei Felder unten stehen in Wallet unter dem Bild. Einfach leer lassen, wenn du sie nicht brauchst.</p>
+        <div class="row">
+          <label class="field"><span>Feld 1 – Titel</span><input id="f1l" maxlength="16" autocomplete="off"></label>
+          <label class="field"><span>Feld 1 – Inhalt</span><input id="f1v" maxlength="24" autocomplete="off"></label>
+        </div>
+        <div class="row">
+          <label class="field"><span>Feld 2 – Titel</span><input id="f2l" maxlength="16" autocomplete="off"></label>
+          <label class="field"><span>Feld 2 – Inhalt</span><input id="f2v" maxlength="24" autocomplete="off"></label>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Farben</h3>
+        <div class="swatches" id="themes"></div>
+        <div class="row three">
+          <label class="color"><input type="color" id="bg"><span>Hintergrund</span></label>
+          <label class="color"><input type="color" id="fg"><span>Text</span></label>
+          <label class="color"><input type="color" id="lb"><span>Titel</span></label>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>QR-Code</h3>
+        <label class="switch"><input type="checkbox" id="qrOn"><i></i><span>QR-Code unten auf der Karte</span></label>
+        <label class="field"><span>Inhalt (Link oder Text)</span><input id="qr" maxlength="200" autocomplete="off" inputmode="url"></label>
+        <label class="field"><span>Text unter dem Code (optional)</span><input id="qrText" maxlength="30" autocomplete="off"></label>
+      </div>
+
+      <div class="group only-wallet">
+        <h3>Extra</h3>
+        <label class="switch"><input type="checkbox" id="burn"><i></i><span>Text fest ins Banner-Bild malen</span></label>
+        <p class="note">Nimm das, wenn du beim Anlegen der Karte keinen eigenen Text eintippen kannst. Sonst lieber aus lassen, damit der Text nicht doppelt erscheint.</p>
+      </div>
+
+      <button class="btn dark block" data-go="3">Fertig – Bilder erstellen</button>
+    </section>
+
+    <!-- Schritt 3: Fertig -->
+    <section class="panel" data-panel="3" hidden>
+      <div class="group">
+        <h3>1. Bilder in Fotos sichern</h3>
+        <p class="note">Auf <b>„Sichern“</b> tippen → „Bild sichern“. Oder das Bild <b>lange gedrückt halten</b> → „Zu Fotos hinzufügen“.</p>
+        <div class="outputs" id="outputs"></div>
+      </div>
+
+      <div class="group">
+        <h3>2. Texte zum Einfügen</h3>
+        <div class="copies" id="copies"></div>
+      </div>
+
+      <div class="group">
+        <h3>3. Karte in Wallet legen</h3>
+        <div class="tabs" id="guide-tabs">
+          <button data-tab="ios" class="on">iOS 27 Wallet</button>
+          <button data-tab="p2u">Pass2U (gratis App)</button>
+        </div>
+        <ol class="guide" data-guide="ios">
+          <li>Sichere oben das <b>Banner</b> in Fotos.</li>
+          <li>Öffne <b>Wallet</b> und tippe oben rechts auf <b>+</b>.</li>
+          <li>Wähle <b>„Pass erstellen“</b> und dann <b>„Manuell erstellen“</b>.</li>
+          <li>Wähle als Bild das <b>Banner</b> aus deinen Fotos.</li>
+          <li>Trag die Texte ein (oben auf „Kopieren“ tippen, dann einfügen). Als Code nimmst du den <b>QR-Inhalt</b>.</li>
+          <li class="only-bank">Feld für den <b>großen Text leer lassen</b>. Chip, Nummer und Name sind schon im Banner.</li>
+          <li>Speichern – fertig. Die Karte liegt jetzt in Wallet.</li>
+          <li class="tip">Kein „Pass erstellen“ zu sehen? Dann hast du noch kein iOS 27 (Einstellungen → Allgemein → Softwareupdate) – oder nimm einfach Pass2U. Die Knöpfe können bei dir auch etwas anders heißen.</li>
+        </ol>
+        <ol class="guide" data-guide="p2u" hidden>
+          <li>Lade <b>„Pass2U Wallet“</b> aus dem App Store (kostenlos).</li>
+          <li>Sichere oben <b>Banner</b>, <b>Logo</b> und <b>Icon</b> in Fotos.</li>
+          <li>In Pass2U auf <b>+</b> tippen und einen neuen Pass erstellen. Als Art <b>„Kundenkarte“ / „Store Card“</b> wählen.</li>
+          <li>Bilder: <b>Strip</b> = Banner, <b>Logo</b> = Logo, <b>Icon</b> = Icon.</li>
+          <li>Farben: Hintergrund, Text und Titel mit den Farbcodes von oben (z. B. <code id="g-bg"></code>).</li>
+          <li class="only-wallet">Felder: <b>Primär</b> = großer Text, <b>Sekundär</b> = Feld 1 und Feld 2, <b>Logo-Text</b> = Kartenname.</li>
+          <li class="only-bank">Felder: <b>Primär leer lassen</b> (sonst steht Text über dem Chip), <b>Sekundär</b> = Feld 1 und Feld 2, <b>Logo-Text</b> = Kartenname.</li>
+          <li>Barcode: <b>QR-Code</b> wählen und den QR-Inhalt einfügen – oder keinen Barcode.</li>
+          <li>Speichern → <b>„Zu Apple Wallet hinzufügen“</b>.</li>
+          <li class="tip">Die Knöpfe in Pass2U können je nach Version etwas anders heißen – das Prinzip bleibt gleich.</li>
+        </ol>
+      </div>
+      <p class="note center">Hinweis: Das ist eine eigene Karte in Wallet – bezahlen kann man damit nicht. Das Bild einer echten Bankkarte kann keine App ändern.</p>
+      <button class="btn ghost block" data-go="2">Zurück zum Gestalten</button>
+    </section>
+
+    <!-- Meine Karten -->
+    <section class="panel" data-panel="cards" hidden>
+      <button class="btn primary block" id="new-card">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Neue Karte
+      </button>
+      <div class="cardlist" id="cardlist"></div>
+    </section>
+
+    <footer class="foot">Syntix Card <span id="version"></span> · Eigene Karte, kein Zahlungsmittel</footer>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="qr.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "Syntix Card",
+  "short_name": "Syntix Card",
+  "description": "Eigene Wallet-Karte mit deinem Bild gestalten.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f4f7",
+  "theme_color": "#f4f4f7",
+  "icons": [
+    { "src": "assets/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
